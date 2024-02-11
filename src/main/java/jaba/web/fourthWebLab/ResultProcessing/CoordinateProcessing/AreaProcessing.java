@@ -23,7 +23,7 @@ public class AreaProcessing implements CartesianAreas {
     public boolean thirdRotation(Double x, Double y, Double R) {
         if(x <= 0 && y <= 0){
             double line = -x/2 - R/2;
-            return line<=y && x<=-R && y<=-R/2;
+            return line<=y && x>=-R && y>=-R/2;
         }
         return false;
     }
