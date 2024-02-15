@@ -1,4 +1,4 @@
-package jaba.web.fourthWebLab.DatabaseHandlers.User;
+package jaba.web.fourthWebLab.DatabaseHandlers.Entitities;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,12 +19,8 @@ public class User {
     @Id
     private String login;
     @Column(nullable = false)
-//    @JsonIgnore
     private String password;
-    public User(String login, String password){
-        this.login = login;
-        this.password = password;
-    }
+
 
     public static String encryptStringMD2(String string) {
         try {
@@ -37,7 +33,7 @@ public class User {
             }
             return hashedString;
         } catch (NoSuchAlgorithmException e) {
-
+            System.err.println("Нет подобного алгоритма");
         }
         return null;
     }

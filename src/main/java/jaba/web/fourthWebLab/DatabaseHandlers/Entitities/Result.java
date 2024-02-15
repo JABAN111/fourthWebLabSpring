@@ -1,10 +1,7 @@
-package jaba.web.fourthWebLab.DatabaseHandlers.Results;
+package jaba.web.fourthWebLab.DatabaseHandlers.Entitities;
 
-import jaba.web.fourthWebLab.DatabaseHandlers.User.User;
-import jaba.web.fourthWebLab.ResultProcessing.CoordinateProcessing.AreaProcessing;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -44,9 +41,4 @@ public class Result {
         this.user = user_login;
     }
 
-
-    public void setHit() {
-        AreaProcessing areaProcessing = new AreaProcessing();
-        this.hit = areaProcessing.areaCheck(this.x,this.y,this.r);
-    }
 }
