@@ -1,8 +1,10 @@
 package jaba.web.fourthWebLab.DatabaseHandlers.Results;
 
 import jaba.web.fourthWebLab.DatabaseHandlers.User.User;
+import jaba.web.fourthWebLab.ResultProcessing.CoordinateProcessing.AreaProcessing;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -26,16 +28,25 @@ public class Result {
     @Column(nullable = false)
     private Boolean hit;
 
+
+
     @ManyToOne
     @JoinColumn(name="user_login",nullable = false)
-    private User user_login;
+    private User user;
 
-    public Result(Double x, Double y, Double r, Date date, Boolean hit, User user_login) {
+    public Result(Double x, Double y, Double r, boolean hit,Date date, User user_login)
+    {
         this.x = x;
         this.y = y;
         this.r = r;
         this.date = date;
         this.hit = hit;
-        this.user_login = user_login;
+        this.user = user_login;
+    }
+
+
+    public void setHit() {
+        AreaProcessing areaProcessing = new AreaProcessing();
+        this.hit = areaProcessing.areaCheck(this.x,this.y,this.r);
     }
 }

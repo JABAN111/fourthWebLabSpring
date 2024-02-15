@@ -39,6 +39,11 @@ public class AreaProcessing implements CartesianAreas {
 
     @Override
     public boolean areaCheck(Double x, Double y, Double R) {
+        if(R < 0){
+            x *= -1;
+            y *= -1;
+            R *= -1;
+        }
         return firstRotation(x,y,R) || secondRotation(x,y,R) || thirdRotation(x,y,R) || fourthRotation(x,y,R);
     }
 }

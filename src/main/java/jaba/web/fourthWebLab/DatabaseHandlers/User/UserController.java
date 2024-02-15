@@ -1,63 +1,52 @@
 package jaba.web.fourthWebLab.DatabaseHandlers.User;
 
-import jaba.web.fourthWebLab.DatabaseHandlers.Exceptions.UserNotFoundException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
+import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@CrossOrigin()
-
+@CrossOrigin
 public class UserController {
     private final UserRepository repository;
-    private final UserModelAssembler assembler;
+    @Getter
+    private static final String salt = "2Hq@*!8fdAQl";
 
-    public UserController(UserRepository repository, UserModelAssembler assembler) {
+
+    public UserController(UserRepository repository) {
         this.repository = repository;
-        this.assembler = assembler;
     }
 
-    @GetMapping("/users")
-    CollectionModel<EntityModel<User>> all() {
-        List<EntityModel<User>> users = repository.findAll().stream() //
-                .map(assembler::toModel) //
-                .collect(Collectors.toList());
-        return CollectionModel.of(users, linkTo(methodOn(UserController.class).all()).withSelfRel());
-    }
     @PostMapping("/users")
-    User newUser(@RequestBody User newUser) {
-        System.out.println("у нас новый результат" + newUser);
-        return repository.save(newUser);
+    NewUser newUser(@RequestBody User newUser) {
+        if (repository.findById(newUser.getLogin()).isPresent()) {
+            return NewUser.USER_ALREADY_EXIST;
+        } else {
+            String hashedPassword = User.encryptStringMD2(newUser.getPassword() + salt);
+            newUser.setPassword(hashedPassword);
+            repository.save(newUser);
+            return NewUser.SUCCESSFULLY_CREATED;
+        }
     }
-    @PostMapping("/users/{login}")
-    EntityModel<User> one(@PathVariable String login) {
-        User user = repository.findById(login)
-                .orElseThrow(() -> new UserNotFoundException(login));
 
-        return assembler.toModel(user);
+    @CrossOrigin
+    @PostMapping("/users/check")
+    public statusUserInformation checkUser(@RequestBody User user) {
+        String login = user.getLogin();
+        String password = user.getPassword();
+        String hashedPassword = User.encryptStringMD2(password + salt);
+
+        if (repository.findById(login).isPresent()) {
+            if (repository.findById(login).get().getPassword().equals(hashedPassword)) {
+                return statusUserInformation.USER_VALID;
+            } else {
+                return statusUserInformation.PASSWORD_INVALID;
+            }
+        }
+        return statusUserInformation.USER_NOT_FOUND;
     }
 
-//    @PutMapping("/users/{id}")
-//    User replaceUser(@RequestBody User newUser, @PathVariable String login) {
-//
-//        return repository.findById(id)
-//                .map(employee -> {
-//                    newUser.setLogin(newUser.getLogin());
-//                    //нужно добавить, чтобы после получения пароля была его расшифровка
-//                    newUser.setPassword(newUser.getPassword());
-//                    return repository.save(employee);
-//                })
-//                .orElseGet(() -> {
-//                    newUser.setId(id);
-//                    return repository.save(newUser);
-//                });
-//    }
+    @CrossOrigin
     @DeleteMapping("/user/{login}")
     void deleteUser(@PathVariable String login) {
         repository.deleteById(login);
