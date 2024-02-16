@@ -1,0 +1,17 @@
+drop table users cascade;
+drop table results;
+
+
+create table users(
+                      login varchar(255) primary key not null UNIQUE,
+                      password varchar(255) not null
+);
+create table results(
+                        id serial primary key,
+                        x float4 check ( x>=-3 and x<=5 ),
+                        y float4 check ( y>=-5 and y<=5),
+                        r float4 check ( r>=-3 and r<=5 ),
+                        date date,
+                        hit boolean not null ,
+                        user_login varchar(255) not null references users(login)
+);
